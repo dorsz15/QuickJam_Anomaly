@@ -6,18 +6,15 @@ public class MovementController : MonoBehaviour
 {
     public Transform head;
     public float playerSpeed = 8.0f;
-    public float jumpForce = 6.0f;
 
     [Header("Ground Check")]
     public LayerMask groundLayer;
 
     [Header("Input Actions")]
     public InputActionReference moveAction;
-    public InputActionReference jumpAction;
 
     private Rigidbody rb;
     private Vector2 moveInput;
-    private bool jumpRequested;
 
     void Start()
     {
@@ -27,26 +24,11 @@ public class MovementController : MonoBehaviour
     void OnEnable()
     {
         if (moveAction != null) moveAction.action.Enable();
-        if (jumpAction != null)
-        {
-            jumpAction.action.Enable();
-            jumpAction.action.performed += OnJumpPerformed;
-        }
     }
 
     void OnDisable()
     {
         if (moveAction != null) moveAction.action.Disable();
-        if (jumpAction != null)
-        {
-            jumpAction.action.performed -= OnJumpPerformed;
-            jumpAction.action.Disable();
-        }
-    }
-
-    private void OnJumpPerformed(InputAction.CallbackContext context)
-    {
-        jumpRequested = true;
     }
 
     void Update()
@@ -64,15 +46,6 @@ public class MovementController : MonoBehaviour
         Vector3 desiredMove = (right.normalized * moveInput.x + forward.normalized * moveInput.y).normalized * playerSpeed;
 
         rb.linearVelocity = new Vector3(desiredMove.x, rb.linearVelocity.y, desiredMove.z);
-
-        if (jumpRequested)
-        {
-            jumpRequested = false;
-            if (isTouchingGround())
-            {
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
-            }
-        }
     }
 
     private bool isTouchingGround()
