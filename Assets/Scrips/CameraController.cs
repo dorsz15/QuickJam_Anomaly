@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour
     public Transform _camera;
     public Transform hand;
     public float cameraSensitivity = 0.15f;
+    public float cameraAcceleration = 2f;
 
     [Header("Input Actions")]
     public InputActionReference lookAction;
@@ -36,10 +37,12 @@ public class CameraController : MonoBehaviour
         yaw += look.x * cameraSensitivity;
         pitch = Mathf.Clamp(pitch + look.y * cameraSensitivity, -89f, 89f);
 
-        head.localRotation = Quaternion.Euler(0f, yaw, 0f);
-        _camera.localRotation = Quaternion.Euler(-pitch, 0f, 0f);
-
         if (hand != null)
-            hand.localRotation = Quaternion.Euler(pitch, yaw, 0f); // kept from your original
+            hand.localRotation = Quaternion.Euler(-pitch, yaw, 0f); // kept from your original
+
+        head.localRotation = Quaternion.Lerp(head.localRotation, Quaternion.Euler(0f, yaw, 0f), cameraAcceleration * Time.deltaTime);
+        _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(-pitch, 0f, 0f), cameraAcceleration * Time.deltaTime);
+
+
     }
 }
